@@ -7,29 +7,54 @@
 
 `include "ece2300-misc.v"
 
+
+// Optimized
+// module PairTripleDetector_GL
+// (
+//   input  wire in0,
+//   input  wire in1,
+//   input  wire in2,
+//   output wire out
+//  );
+
+//   wire w, x, y;
+  
+//   or ( w,   in0, in1);
+//   and( x,   in0, in1);
+//   and( y,   w,   in2);
+//   or( out,  y,   x);
+
+// endmodule
+
+// Unoptimized
 module PairTripleDetector_GL
 (
   input  wire in0,
   input  wire in1,
   input  wire in2,
   output wire out
- );
+);
 
-  //''' ACTIVITY '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-  // Implement pair/triple detector using explicit gate-level modeling
-  //''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  // NOT gates to create complement of each input
 
-  // `ECE2300_UNUSED( in0 );
-  // `ECE2300_UNUSED( in1 );
-  // `ECE2300_UNUSED( in2 );
-  // `ECE2300_UNDRIVEN( out );
+  wire in0_n, in1_n, in2_n;
 
-  wire w, x, y;
-  
-  or ( w,   in0, in1);
-  and( x,   in0, in1);
-  and( y,   w,   in2);
-  or( out,  y,   x);
+  not( in0_n, in0 );
+  not( in1_n, in1 );
+  not( in2_n, in2 );
+
+  // AND gates for each row in the truth table where output is one
+
+  wire row3, row5, row6, row7;
+
+  and( row3, in0_n, in1,   in2   );
+  and( row5, in0,   in1_n, in2   );
+  and( row6, in0,   in1,   in2_n );
+  and( row7, in0,   in1,   in2   );
+
+  // OR together the outputs of the AND gates
+
+  or( out, row3, row5, row6, row7 );
 
 endmodule
 
